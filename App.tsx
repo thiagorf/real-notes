@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MyNotes } from "./src/screens/MyNotes";
+import { customOptions } from "./src/util/tab-screen-options";
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    return (
+        <NavigationContainer>
+            <Tab.Navigator
+                initialRouteName="MyNotes"
+                screenOptions={{
+                    headerShown: false,
+                }}
+            >
+                <Tab.Screen
+                    name="MyNotes"
+                    component={MyNotes}
+                    options={{
+                        ...customOptions({
+                            iconName: "bars",
+                            labelName: "notes",
+                        }),
+                    }}
+                />
+            </Tab.Navigator>
+        </NavigationContainer>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
