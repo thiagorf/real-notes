@@ -1,14 +1,51 @@
-import { ScrollView } from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, ScrollView, Text, View } from "react-native";
 import { NoteItem } from "../components/NoteItem";
-
-const times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+import { initRealm } from "../lib/realm/init";
+import { NotesInfo, NotesInfoResult } from "../lib/realm/schema/NotesInfo";
+import { cbRealm } from "../util/cb-realm";
 
 export const MyNotes = () => {
+    const [notesInfo, setNotesInfo] = useState<NotesInfoResult>();
+
+    useEffect(() => {
+        (async () => {
+            const realm = await initRealm();
+
+            cbRealm(realm, () => {
+                const notes = realm.objects<NotesInfo>(NotesInfo.schema.name);
+                setNotesInfo(notes);
+            });
+        })();
+    }, []);
+
+    if (!notesInfo) {
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
+    if (notesInfo.length === 0) {
+        return (
+            <View>
+                <Text>
+                    it's a little empty right now, go create some notes!
+                </Text>
+            </View>
+        );
+    }
+
     return (
         <ScrollView>
-            {times.map((x) => (
-                <NoteItem key={x} />
-            ))}
+            {notesInfo && (
+                <FlatList
+                    data={notesInfo}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => <NoteItem {...item} />}
+                />
+            )}
         </ScrollView>
     );
 };

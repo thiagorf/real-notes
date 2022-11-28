@@ -1,5 +1,6 @@
 import { Text } from "react-native";
 import styled from "styled-components/native";
+import { NotesInfo } from "../lib/realm/schema/NotesInfo";
 
 const NoteCard = styled.View`
     border-width: 2px;
@@ -8,10 +9,10 @@ const NoteCard = styled.View`
     margin: 2px 4px;
 `;
 
-export const NoteItem = () => {
+export const NoteItem = ({ title }: NotesInfo) => {
     return (
         <NoteCard>
-            <Text>Note item</Text>
+            <Text>{title}</Text>
         </NoteCard>
     );
 };
