@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { FlatList, ScrollView, Text, View } from "react-native";
-import { NoteItem } from "../components/NoteItem";
-import { initRealm } from "../lib/realm/init";
-import { NotesInfo, NotesInfoResult } from "../lib/realm/schema/NotesInfo";
-import { cbRealm } from "../util/cb-realm";
+import { FlatList, ScrollView, Text, View, StyleSheet } from "react-native";
+import { NoteItem } from "../../components/NoteItem";
+import { initRealm } from "../../lib/realm/init";
+import { NotesInfo, NotesInfoResult } from "../../lib/realm/schema/NotesInfo";
+import { cbRealm } from "../../util/cb-realm";
 
 export const MyNotes = () => {
     const [notesInfo, setNotesInfo] = useState<NotesInfoResult>();
@@ -30,7 +30,7 @@ export const MyNotes = () => {
     if (notesInfo.length === 0) {
         return (
             <View>
-                <Text>
+                <Text style={s.emptyNotes}>
                     it's a little empty right now, go create some notes!
                 </Text>
             </View>
@@ -49,3 +49,9 @@ export const MyNotes = () => {
         </ScrollView>
     );
 };
+
+const s = StyleSheet.create({
+    emptyNotes: {
+        fontSize: 20,
+    },
+});
