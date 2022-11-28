@@ -6,5 +6,6 @@ export const initRealm = async () => {
     return await Realm.open({
         path: "RealNotesDB",
         schema: [NotesInfo.schema, Note.schema],
+        deleteRealmIfMigrationNeeded: true,
     });
 };
