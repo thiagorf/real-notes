@@ -1,6 +1,7 @@
-import { Text } from "react-native";
+import { Text, View, ViewProps } from "react-native";
 import styled from "styled-components/native";
 import { NotesInfoProperties } from "../lib/realm/schema/NotesInfo";
+import {} from "react-native";
 
 const NoteCard = styled.View`
     border-width: 2px;
@@ -9,7 +10,7 @@ const NoteCard = styled.View`
     margin: 2px 4px;
 `;
 
-type NoteItemProps = {
+type NoteItemProps = ViewProps & {
     note: NotesInfoProperties;
 };
 

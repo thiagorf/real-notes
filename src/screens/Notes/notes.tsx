@@ -21,11 +21,11 @@ import {
     NotesTitleInput,
     ScreenEditorContainer,
 } from "./notes-styles";
-import { Props } from "../../../App";
+import { NotesRouteProps } from "../../../App";
 
 const { useRealm } = RealmContext;
 
-export const Notes = ({ route }: Props) => {
+export const Notes = ({ route }: NotesRouteProps) => {
     const [editorContet, setEditorContent] = useState("");
     const [noteTitle, setNoteTitle] = useState("");
 

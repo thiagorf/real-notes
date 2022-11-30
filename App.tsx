@@ -14,7 +14,8 @@ type RouteParams = {
     Notes: { id?: string };
 };
 
-export type Props = BottomTabScreenProps<RouteParams, "Notes">;
+export type NotesRouteProps = BottomTabScreenProps<RouteParams, "Notes">;
+export type MyNotesRouteProps = BottomTabScreenProps<RouteParams, "MyNotes">;
 
 const Tab = createBottomTabNavigator<RouteParams>();
 
