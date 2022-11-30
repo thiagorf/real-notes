@@ -11,7 +11,13 @@ import {
     RichToolbar,
     actions,
 } from "react-native-pell-rich-editor";
+import { UpdateMode } from "realm";
 import { EditorContainer } from "../../components/EditorContainer";
+import { SavingPopup } from "../../components/SavingPopup";
+import { initRealm } from "../../lib/realm/init";
+import { Note } from "../../lib/realm/schema/Note";
+import { NotesInfo } from "../../lib/realm/schema/NotesInfo";
+import { cbRealm } from "../../util/cb-realm";
 import {
     EditorToolbar,
     NotesTitleInput,
@@ -46,16 +52,32 @@ export const Notes = () => {
     };
 
     useEffect(() => {
-        const keyboardHide = Keyboard.addListener("keyboardDidHide", () => {
-            console.log("Keyboard hide");
-            console.log("a: ", noteTitle.length);
-            console.log("b: ", editorContet.length);
-            if (noteTitle.length && editorContet.length) {
-                console.log(noteTitle.length);
-                console.log(editorContet.length);
-                console.log("Save content in db");
+        const keyboardHide = Keyboard.addListener(
+            "keyboardDidHide",
+            async () => {
+                console.log("Keyboard hide");
+
+                if (noteTitle.length && editorContet.length) {
+                    console.log("Save content in db");
+                    const realm = await initRealm();
+                    cbRealm(realm, () => {
+                        const content = new Note(editorContet);
+                        const noteContent = realm.create<Note>(
+                            Note.schema.name,
+                            content,
+                            UpdateMode.All
+                        );
+                        const notesInfo = new NotesInfo(noteTitle, noteContent);
+                        const note = realm.create<NotesInfo>(
+                            NotesInfo.schema.name,
+                            notesInfo,
+                            UpdateMode.All
+                        );
+                        console.log(note);
+                    });
+                }
             }
-        });
+        );
 
         return () => {
             keyboardHide.remove();
@@ -87,6 +109,7 @@ export const Notes = () => {
                     actions={[actions.setBold, actions.setItalic]}
                 />
             </EditorToolbar>
+            <SavingPopup />
         </ScreenEditorContainer>
     );
 };
