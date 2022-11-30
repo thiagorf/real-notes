@@ -1,33 +1,15 @@
-import { useEffect, useState } from "react";
-import { FlatList, ScrollView, Text, View, StyleSheet } from "react-native";
+import { FlatList, Text, View, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { NoteItem } from "../../components/NoteItem";
-import { initRealm } from "../../lib/realm/init";
-import { NotesInfo, NotesInfoResult } from "../../lib/realm/schema/NotesInfo";
-import { cbRealm } from "../../util/cb-realm";
+import { NotesInfo } from "../../lib/realm/schema/NotesInfo";
+import RealmContext from "../../lib/realm/realm-context";
+
+const { useQuery } = RealmContext;
 
 export const MyNotes = () => {
-    const [notesInfo, setNotesInfo] = useState<NotesInfoResult>();
+    const notes = useQuery(NotesInfo);
 
-    useEffect(() => {
-        (async () => {
-            const realm = await initRealm();
-
-            cbRealm(realm, () => {
-                const notes = realm.objects<NotesInfo>(NotesInfo.schema.name);
-                setNotesInfo(notes);
-            });
-        })();
-    }, []);
-
-    if (!notesInfo) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
-
-    if (notesInfo.length === 0) {
+    if (notes.length === 0) {
         return (
             <View>
                 <Text style={s.emptyNotes}>
@@ -38,15 +20,13 @@ export const MyNotes = () => {
     }
 
     return (
-        <ScrollView>
-            {notesInfo && (
-                <FlatList
-                    data={notesInfo}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => <NoteItem {...item} />}
-                />
-            )}
-        </ScrollView>
+        <SafeAreaView>
+            <FlatList
+                data={notes}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <NoteItem note={item} />}
+            />
+        </SafeAreaView>
     );
 };
 

@@ -1,12 +1,21 @@
-import { Note } from "./Note";
+import "react-native-get-random-values";
 import { nanoid } from "nanoid";
+import { Realm } from "@realm/react";
 
-export class NotesInfo {
+export type NotesInfoProperties = {
+    id: string;
+    title: string;
+    createdAt: string;
+    updatedAt?: Date;
+    content?: string;
+};
+
+export class NotesInfo extends Realm.Object {
     public id: string = nanoid();
     public title: string;
-    public createdAt: string = new Date().toISOString();
+    public createdAt: string;
     public updatedAt?: Date;
-    public content?: Realm.Results<Note>;
+    public content?: string;
 
     public static schema: Realm.ObjectSchema = {
         name: "NotesInfo",
@@ -15,12 +24,19 @@ export class NotesInfo {
             title: "string",
             createdAt: "string",
             updatedAt: "string?",
-            content: "Note?",
+            content: "string?",
         },
+        primaryKey: "id",
     };
 
-    constructor(title: string) {
-        this.title = title;
+    public static generate(title: string, content?: string) {
+        return {
+            id: nanoid(),
+            title,
+            createdAt: new Date().toISOString(),
+            updatedAt: null,
+            content,
+        };
     }
 }
 
