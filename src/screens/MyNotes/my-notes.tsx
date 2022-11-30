@@ -24,7 +24,7 @@ export const MyNotes = () => {
             <FlatList
                 data={notes}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <NoteItem {...item} />}
+                renderItem={({ item }) => <NoteItem note={item} />}
             />
         </SafeAreaView>
     );

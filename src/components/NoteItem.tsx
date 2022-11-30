@@ -9,10 +9,14 @@ const NoteCard = styled.View`
     margin: 2px 4px;
 `;
 
-export const NoteItem = ({ title }: NotesInfoProperties) => {
+type NoteItemProps = {
+    note: NotesInfoProperties;
+};
+
+export const NoteItem = ({ note }: NoteItemProps) => {
     return (
         <NoteCard>
-            <Text>{title}</Text>
+            <Text>{note.title}</Text>
         </NoteCard>
     );
 };

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import RealmContext from "../../lib/realm/realm-context";
 import {
     Keyboard,
     NativeSyntheticEvent,
@@ -14,22 +15,38 @@ import {
 import { UpdateMode } from "realm";
 import { EditorContainer } from "../../components/EditorContainer";
 import { SavingPopup } from "../../components/SavingPopup";
-import { initRealm } from "../../lib/realm/init";
-import { Note } from "../../lib/realm/schema/Note";
 import { NotesInfo } from "../../lib/realm/schema/NotesInfo";
-import { cbRealm } from "../../util/cb-realm";
 import {
     EditorToolbar,
     NotesTitleInput,
     ScreenEditorContainer,
 } from "./notes-styles";
+import { Props } from "../../../App";
 
-export const Notes = () => {
+const { useRealm } = RealmContext;
+
+export const Notes = ({ route }: Props) => {
     const [editorContet, setEditorContent] = useState("");
     const [noteTitle, setNoteTitle] = useState("");
 
+    //route have param -> load note
+    console.log(route.params.id);
+
+    const realm = useRealm();
+
     const editorRef = useRef<RichEditor>(null);
     const scrollRef = useRef<ScrollView>(null);
+
+    const createNote = useCallback(() => {
+        realm.write(() => {
+            const noteContent = realm.create(
+                NotesInfo.schema.name,
+                NotesInfo.generate(noteTitle, editorContet),
+                UpdateMode.All
+            );
+            console.log(noteContent);
+        });
+    }, [realm]);
 
     const handleTitleInput = ({
         nativeEvent: { text },
@@ -59,7 +76,9 @@ export const Notes = () => {
 
                 if (noteTitle.length && editorContet.length) {
                     console.log("Save content in db");
-                    const realm = await initRealm();
+                    createNote();
+                    /*
+					const realm = await initRealm();
                     cbRealm(realm, () => {
                         const content = new Note(editorContet);
                         const noteContent = realm.create<Note>(
@@ -75,6 +94,7 @@ export const Notes = () => {
                         );
                         console.log(note);
                     });
+					*/
                 }
             }
         );

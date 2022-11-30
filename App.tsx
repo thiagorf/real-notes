@@ -1,5 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { MyNotes } from "./src/screens/MyNotes";
 import { customOptions } from "./src/util/tab-screen-options";
 import { Notes } from "./src/screens/Notes";
@@ -8,7 +9,14 @@ import RealmContext from "./src/lib/realm/realm-context";
 
 const { RealmProvider } = RealmContext;
 
-const Tab = createBottomTabNavigator();
+type RouteParams = {
+    MyNotes: undefined;
+    Notes: { id?: string };
+};
+
+export type Props = BottomTabScreenProps<RouteParams, "Notes">;
+
+const Tab = createBottomTabNavigator<RouteParams>();
 
 export default function App() {
     return (
