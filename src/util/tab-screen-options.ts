@@ -23,10 +23,10 @@ export const customOptions = ({
                 name: iconName,
                 size: size,
                 color: color,
-                style: { marginTop: 6 },
+                style: { marginTop: 5.8 },
             }),
         tabBarLabelStyle: {
-            marginBottom: 8,
+            marginBottom: 6,
         },
     };
 };

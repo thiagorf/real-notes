@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import RealmContext from "../../lib/realm/realm-context";
 import {
+    Alert,
     Keyboard,
     NativeSyntheticEvent,
     ScrollView,
+    Text,
     TextInputChangeEventData,
     View,
 } from "react-native";
@@ -21,32 +23,72 @@ import {
     NotesTitleInput,
     ScreenEditorContainer,
 } from "./notes-styles";
-import { NotesRouteProps } from "../../../App";
+import { NotesRouteProps } from "../../app-routes";
+import useLatest from "../../hooks/useLatest";
 
 const { useRealm } = RealmContext;
 
 export const Notes = ({ route }: NotesRouteProps) => {
-    const [editorContet, setEditorContent] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [editorContent, setEditorContent] = useState("");
     const [noteTitle, setNoteTitle] = useState("");
 
-    //route have param -> load note
-    console.log(route.params.id);
+    const latestTitle = useLatest(noteTitle);
+    const latestContent = useLatest(editorContent);
 
     const realm = useRealm();
 
     const editorRef = useRef<RichEditor>(null);
     const scrollRef = useRef<ScrollView>(null);
 
-    const createNote = useCallback(() => {
-        realm.write(() => {
-            const noteContent = realm.create(
-                NotesInfo.schema.name,
-                NotesInfo.generate(noteTitle, editorContet),
-                UpdateMode.All
-            );
-            console.log(noteContent);
-        });
-    }, [realm]);
+    const getNote = useCallback(
+        (id: string) => {
+            realm.write(() => {
+                const note = realm.objectForPrimaryKey<NotesInfo>(
+                    NotesInfo.schema.name,
+                    id
+                );
+                if (note) {
+                    console.log(note);
+
+                    const { title, content } = note;
+                    setNoteTitle(title);
+                    editorRef.current?.setContentHTML(content || "");
+                    setIsLoading(false);
+                }
+            });
+        },
+        [realm]
+    );
+
+    const createNote = useCallback(
+        (title: string, content: string) => {
+            realm.write(() => {
+                if (route.params.id) {
+                    const selectedNote = realm.objectForPrimaryKey<NotesInfo>(
+                        NotesInfo.schema.name,
+                        route.params.id
+                    );
+
+                    if (selectedNote) {
+                        console.log("Atualizou?");
+                        selectedNote.title = title;
+                        selectedNote.content = content;
+                        selectedNote.updatedAt = new Date().toISOString();
+                    } else {
+                        Alert.alert("Error", "Invalid or inexisting note");
+                    }
+                } else {
+                    realm.create(
+                        NotesInfo.schema.name,
+                        NotesInfo.generate(title, content),
+                        UpdateMode.All
+                    );
+                }
+            });
+        },
+        [realm]
+    );
 
     const handleTitleInput = ({
         nativeEvent: { text },
@@ -69,40 +111,31 @@ export const Notes = ({ route }: NotesRouteProps) => {
     };
 
     useEffect(() => {
+        if (route.params.id) getNote(route.params.id);
+
         const keyboardHide = Keyboard.addListener(
             "keyboardDidHide",
             async () => {
-                console.log("Keyboard hide");
-
-                if (noteTitle.length && editorContet.length) {
+                if (
+                    latestTitle.current.length &&
+                    latestContent.current.length
+                ) {
                     console.log("Save content in db");
-                    createNote();
-                    /*
-					const realm = await initRealm();
-                    cbRealm(realm, () => {
-                        const content = new Note(editorContet);
-                        const noteContent = realm.create<Note>(
-                            Note.schema.name,
-                            content,
-                            UpdateMode.All
-                        );
-                        const notesInfo = new NotesInfo(noteTitle, noteContent);
-                        const note = realm.create<NotesInfo>(
-                            NotesInfo.schema.name,
-                            notesInfo,
-                            UpdateMode.All
-                        );
-                        console.log(note);
-                    });
-					*/
+                    createNote(latestTitle.current, latestContent.current);
                 }
             }
         );
 
-        return () => {
-            keyboardHide.remove();
-        };
-    }, [noteTitle, editorContet]);
+        return () => keyboardHide.remove();
+    }, []);
+
+    if (isLoading && route.params.id) {
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
 
     return (
         <ScreenEditorContainer>
