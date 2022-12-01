@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Animated } from "react-native";
 import styled from "styled-components/native";
 
-interface PopupProps {
-    opacity?: number | Animated.Value;
+interface SavingPopupprops {
+    isVisible: boolean;
+    handleVisibility: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const PopupContainer = styled(Animated.View)`
@@ -26,7 +27,10 @@ const PopupMssage = styled.Text`
     margin: auto 0;
 `;
 
-export const SavingPopup = () => {
+export const SavingPopup = ({
+    isVisible,
+    handleVisibility,
+}: SavingPopupprops) => {
     const fadeAnim = useRef(new Animated.Value(0)).current!;
 
     const animation = useCallback(() => {
@@ -40,8 +44,17 @@ export const SavingPopup = () => {
     const handleStop = () => animation().reset();
 
     useEffect(() => {
-        animation().start();
-    }, []);
+        animation().start(({ finished }) => {
+            if (finished) {
+                handleVisibility(false);
+                handleStop();
+            }
+        });
+    }, [isVisible]);
+
+    if (!isVisible) {
+        return null;
+    }
 
     return (
         <PopupContainer

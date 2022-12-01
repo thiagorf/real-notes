@@ -47,6 +47,7 @@ const AppRoutes = () => {
                         tabBarStyle: {
                             display: "none",
                         },
+                        unmountOnBlur: true,
                     }}
                 />
                 <Tab.Screen
