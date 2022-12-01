@@ -1,8 +1,8 @@
-import { FlatList, Text, View, StyleSheet } from "react-native";
+import { FlatList, Text, View, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NoteItem } from "../../components/NoteItem";
 import { NotesInfo } from "../../lib/realm/schema/NotesInfo";
-import { MyNotesRouteProps } from "../../../App";
+import { MyNotesRouteProps } from "../../app-routes";
 import RealmContext from "../../lib/realm/realm-context";
 
 const { useQuery } = RealmContext;
@@ -33,10 +33,9 @@ export const MyNotes = ({ navigation }: MyNotesRouteProps) => {
                 data={notes}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <NoteItem
-                        note={item}
-                        onTouchStart={() => handleNoteRedirect(item.id)}
-                    />
+                    <Pressable onPress={() => handleNoteRedirect(item.id)}>
+                        <NoteItem note={item} />
+                    </Pressable>
                 )}
             />
         </SafeAreaView>
