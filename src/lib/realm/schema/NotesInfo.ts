@@ -6,7 +6,7 @@ export type NotesInfoProperties = {
     id: string;
     title: string;
     createdAt: string;
-    updatedAt?: Date;
+    updatedAt?: string;
     content?: string;
 };
 
@@ -14,7 +14,7 @@ export class NotesInfo extends Realm.Object {
     public id: string = nanoid();
     public title: string;
     public createdAt: string;
-    public updatedAt?: Date;
+    public updatedAt?: string;
     public content?: string;
 
     public static schema: Realm.ObjectSchema = {
@@ -30,6 +30,8 @@ export class NotesInfo extends Realm.Object {
     };
 
     public static generate(title: string, content?: string) {
+        console.log("Schema title: ", title);
+        console.log("Schema content: ", content);
         return {
             id: nanoid(),
             title,
