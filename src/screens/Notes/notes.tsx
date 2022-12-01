@@ -30,6 +30,8 @@ const { useRealm } = RealmContext;
 
 export const Notes = ({ route }: NotesRouteProps) => {
     const [isLoading, setIsLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
+
     const [editorContent, setEditorContent] = useState("");
     const [noteTitle, setNoteTitle] = useState("");
 
@@ -43,17 +45,21 @@ export const Notes = ({ route }: NotesRouteProps) => {
 
     const getNote = useCallback(
         (id: string) => {
-            realm.write(() => {
+            realm.write(async () => {
                 const note = realm.objectForPrimaryKey<NotesInfo>(
                     NotesInfo.schema.name,
                     id
                 );
                 if (note) {
-                    console.log(note);
-
                     const { title, content } = note;
                     setNoteTitle(title);
-                    editorRef.current?.setContentHTML(content || "");
+                    setEditorContent(content!);
+
+                    if (editorRef.current) {
+                        console.log("Editor ref is available");
+                        editorRef.current.setContentHTML(content!);
+                    }
+
                     setIsLoading(false);
                 }
             });
@@ -71,7 +77,6 @@ export const Notes = ({ route }: NotesRouteProps) => {
                     );
 
                     if (selectedNote) {
-                        console.log("Atualizou?");
                         selectedNote.title = title;
                         selectedNote.content = content;
                         selectedNote.updatedAt = new Date().toISOString();
@@ -121,6 +126,7 @@ export const Notes = ({ route }: NotesRouteProps) => {
                     latestContent.current.length
                 ) {
                     console.log("Save content in db");
+                    setIsVisible(true);
                     createNote(latestTitle.current, latestContent.current);
                 }
             }
@@ -129,13 +135,14 @@ export const Notes = ({ route }: NotesRouteProps) => {
         return () => keyboardHide.remove();
     }, []);
 
+    /*
     if (isLoading && route.params.id) {
         return (
             <View>
                 <Text>Loading...</Text>
             </View>
         );
-    }
+    }*/
 
     return (
         <ScreenEditorContainer>
@@ -162,7 +169,10 @@ export const Notes = ({ route }: NotesRouteProps) => {
                     actions={[actions.setBold, actions.setItalic]}
                 />
             </EditorToolbar>
-            <SavingPopup />
+            <SavingPopup
+                isVisible={isVisible}
+                handleVisibility={setIsVisible}
+            />
         </ScreenEditorContainer>
     );
 };
