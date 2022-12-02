@@ -4,8 +4,8 @@ import {
     Alert,
     Keyboard,
     NativeSyntheticEvent,
+    Pressable,
     ScrollView,
-    Text,
     TextInputChangeEventData,
     View,
 } from "react-native";
@@ -15,7 +15,7 @@ import {
     actions,
 } from "react-native-pell-rich-editor";
 import { UpdateMode } from "realm";
-import { EditorContainer } from "../../components/EditorContainer";
+import { EditorContainer, ToolbarCTA } from "./notes-styles";
 import { SavingPopup } from "../../components/SavingPopup";
 import { NotesInfo } from "../../lib/realm/schema/NotesInfo";
 import {
@@ -25,11 +25,12 @@ import {
 } from "./notes-styles";
 import { NotesRouteProps } from "../../app-routes";
 import useLatest from "../../hooks/useLatest";
+import Icon from "react-native-vector-icons/AntDesign";
 
 const { useRealm } = RealmContext;
 
 export const Notes = ({ route }: NotesRouteProps) => {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isToolbarVisible, setIsToolbarVisible] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
     const [editorContent, setEditorContent] = useState("");
@@ -40,7 +41,7 @@ export const Notes = ({ route }: NotesRouteProps) => {
 
     const realm = useRealm();
 
-    const editorRef = useRef<RichEditor>(null);
+    const editorRef = useRef<RichEditor | null>(null);
     const scrollRef = useRef<ScrollView>(null);
 
     const getNote = useCallback(
@@ -56,15 +57,12 @@ export const Notes = ({ route }: NotesRouteProps) => {
                     setEditorContent(content!);
 
                     if (editorRef.current) {
-                        console.log("Editor ref is available");
                         editorRef.current.setContentHTML(content!);
                     }
-
-                    setIsLoading(false);
                 }
             });
         },
-        [realm]
+        [realm, editorRef]
     );
 
     const createNote = useCallback(
@@ -135,15 +133,6 @@ export const Notes = ({ route }: NotesRouteProps) => {
         return () => keyboardHide.remove();
     }, []);
 
-    /*
-    if (isLoading && route.params.id) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }*/
-
     return (
         <ScreenEditorContainer>
             <View>
@@ -153,7 +142,6 @@ export const Notes = ({ route }: NotesRouteProps) => {
                     value={noteTitle}
                 />
             </View>
-
             <EditorContainer ref={scrollRef}>
                 <RichEditor
                     ref={editorRef}
@@ -164,10 +152,36 @@ export const Notes = ({ route }: NotesRouteProps) => {
                 />
             </EditorContainer>
             <EditorToolbar>
-                <RichToolbar
-                    getEditor={() => editorRef.current!}
-                    actions={[actions.setBold, actions.setItalic]}
-                />
+                {isToolbarVisible ? (
+                    <RichToolbar
+                        getEditor={() => editorRef.current!}
+                        actions={[
+                            actions.setBold,
+                            actions.setItalic,
+                            actions.insertImage,
+                            "hide",
+                        ]}
+                        iconMap={{
+                            hide: () => {
+                                return (
+                                    <Pressable
+                                        onPress={() =>
+                                            setIsToolbarVisible(false)
+                                        }
+                                    >
+                                        <Icon name="closecircleo" size={20} />
+                                    </Pressable>
+                                );
+                            },
+                        }}
+                        style={{
+                            borderWidth: 1,
+                            borderColor: "#CEBDBD",
+                        }}
+                    />
+                ) : (
+                    <ToolbarCTA onPress={() => setIsToolbarVisible(true)} />
+                )}
             </EditorToolbar>
             <SavingPopup
                 isVisible={isVisible}
