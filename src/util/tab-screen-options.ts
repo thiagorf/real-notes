@@ -1,6 +1,6 @@
+import React from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import type { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
-import React from "react";
 
 type TabOptions = Pick<
     BottomTabNavigationOptions,
