@@ -8,6 +8,9 @@ import {
     ScrollView,
     TextInputChangeEventData,
     View,
+    Animated,
+    StyleSheet,
+    ViewStyle,
 } from "react-native";
 import {
     RichEditor,
@@ -30,6 +33,8 @@ import Icon from "react-native-vector-icons/AntDesign";
 const { useRealm } = RealmContext;
 
 export const Notes = ({ route }: NotesRouteProps) => {
+    const toolbarToggleOpacity = useRef(new Animated.Value(1)).current;
+
     const [isToolbarVisible, setIsToolbarVisible] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -44,6 +49,31 @@ export const Notes = ({ route }: NotesRouteProps) => {
     const editorRef = useRef<RichEditor | null>(null);
     const scrollRef = useRef<ScrollView>(null);
 
+    const animation = useCallback(() => {
+        return Animated.timing(toolbarToggleOpacity, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        });
+    }, [toolbarToggleOpacity]);
+
+    const animationStart = (callback?: Animated.EndCallback | undefined) => {
+        animation().start(callback);
+    };
+
+    const animationReset = () => {
+        animation().reset();
+    };
+
+    const handleToolbarTransition = () => {
+        animationStart(({ finished }) => {
+            if (finished) {
+                setIsToolbarVisible(true);
+            }
+        });
+        animationReset();
+    };
+
     const getNote = useCallback(
         (id: string) => {
             realm.write(async () => {
@@ -53,16 +83,18 @@ export const Notes = ({ route }: NotesRouteProps) => {
                 );
                 if (note) {
                     const { title, content } = note;
+                    console.log(note);
                     setNoteTitle(title);
                     setEditorContent(content!);
 
                     if (editorRef.current) {
+                        console.log("editor is rendered");
                         editorRef.current.setContentHTML(content!);
                     }
                 }
             });
         },
-        [realm, editorRef]
+        [realm]
     );
 
     const createNote = useCallback(
@@ -180,7 +212,10 @@ export const Notes = ({ route }: NotesRouteProps) => {
                         }}
                     />
                 ) : (
-                    <ToolbarCTA onPress={() => setIsToolbarVisible(true)} />
+                    <ToolbarCTA
+                        animatedOpacityValue={toolbarToggleOpacity}
+                        handlePress={handleToolbarTransition}
+                    />
                 )}
             </EditorToolbar>
             <SavingPopup

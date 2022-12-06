@@ -1,5 +1,6 @@
 import { forwardRef, PropsWithChildren } from "react";
-import { PressableProps, ScrollView, Text } from "react-native";
+import { TouchableWithoutFeedbackProps, ViewStyle } from "react-native";
+import { PressableProps, ScrollView, Animated, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import styled from "styled-components/native";
 
@@ -30,12 +31,35 @@ export const EditorContainer = forwardRef<ScrollView, PropsWithChildren>(
     )
 );
 
-const ToolbarWrapper = styled.Pressable`
+/*
+type MaybeAnimated<T> = T | Animated.Value;
+type BaseStyleTypes = string | number;
+
+type AnimatedStyle<T> = {
+    [Key in keyof T]: T[Key] extends BaseStyleTypes
+        ? MaybeAnimated<T[Key]>
+        : T[Key] extends Array<infer U>
+        ? Array<AnimatedStyle<U>>
+        : AnimatedStyle<T[Key]>;
+};
+*/
+
+interface ToolbarProps {
+    handlePress: () => unknown;
+    animatedOpacityValue: Animated.Value;
+}
+
+const ToolbarWrapper = styled.View`
     position: absolute;
     right: 15px;
     background-color: #fff;
     width: 60px;
     height: 60px;
+`;
+
+const PressableArea = styled.Pressable`
+    width: 100%;
+    height: 100%;
 `;
 
 const ToolbarCTAIcon = styled(Icon)`
@@ -47,10 +71,22 @@ const ToolbarCTAIcon = styled(Icon)`
     height: 100%;
 `;
 
-export const ToolbarCTA = ({ ...props }: PressableProps) => {
+//const ToolbarAnimatedWrapper = Animated.createAnimatedComponent(ToolbarWrapper);
+
+export const ToolbarCTA = ({
+    animatedOpacityValue,
+    handlePress,
+}: ToolbarProps) => {
     return (
-        <ToolbarWrapper {...props}>
-            <ToolbarCTAIcon name="appstore-o" size={28} />
+        <ToolbarWrapper
+            as={Animated.View}
+            style={{
+                opacity: animatedOpacityValue,
+            }}
+        >
+            <PressableArea onPress={handlePress}>
+                <ToolbarCTAIcon name="appstore-o" size={28} />
+            </PressableArea>
         </ToolbarWrapper>
     );
 };
