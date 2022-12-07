@@ -1,11 +1,7 @@
 import { useRef, useState } from "react";
-import {
-    NativeSyntheticEvent,
-    TextInputChangeEventData,
-    View,
-} from "react-native";
+import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
-import { NotesTitleInput } from "./editor-area-styles";
+import { EditorAreaContainer, NotesTitleInput } from "./editor-area-styles";
 import { Editor } from "../Editor";
 import { EditorTools } from "../EditorTools";
 
@@ -26,14 +22,14 @@ export function EditorArea() {
     }
 
     return (
-        <View>
+        <EditorAreaContainer>
             <NotesTitleInput
                 placeholder="note title"
                 onChange={handleTitleInputChange}
                 value={noteTitle}
             />
             <Editor onChange={handleContentInputChange} ref={editorRef} />
-            <EditorTools editorRef={editorRef.current!} />
-        </View>
+            <EditorTools ref={editorRef} />
+        </EditorAreaContainer>
     );
 }

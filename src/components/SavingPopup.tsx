@@ -27,10 +27,7 @@ const PopupMssage = styled.Text`
     margin: auto 0;
 `;
 
-export const SavingPopup = ({
-    isVisible,
-    handleVisibility,
-}: SavingPopupprops) => {
+export function SavingPopup({ isVisible, handleVisibility }: SavingPopupprops) {
     const fadeAnim = useRef(new Animated.Value(0)).current!;
 
     const animation = useCallback(() => {
@@ -66,4 +63,4 @@ export const SavingPopup = ({
             <PopupMssage>Saving...</PopupMssage>
         </PopupContainer>
     );
-};
+}

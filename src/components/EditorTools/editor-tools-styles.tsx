@@ -1,6 +1,8 @@
-import { Animated, ViewProps } from "react-native";
+import { ViewProps } from "react-native";
+import Animated from "react-native-reanimated";
 import Icon from "react-native-vector-icons/AntDesign";
 import styled from "styled-components/native";
+import { PASTEL_COLORS } from "../../global/colors";
 
 interface ToolbarProps extends ViewProps {
     handlePress: () => unknown;
@@ -24,9 +26,10 @@ const PressableArea = styled.Pressable`
     height: 100%;
 `;
 
+// #d0e4c7 pastel green
+//border: 1px solid #cebdbd;
 const ToolbarCTAIcon = styled(Icon)`
-    border: 1px solid #cebdbd;
-    background-color: #d0e4c7;
+    background-color: ${PASTEL_COLORS.RED};
     border-radius: 4px;
     padding-top: 16px;
     text-align: center;
