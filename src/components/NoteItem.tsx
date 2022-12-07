@@ -13,10 +13,10 @@ type NoteItemProps = {
     note: NotesInfoProperties;
 };
 
-export const NoteItem = ({ note }: NoteItemProps) => {
+export function NoteItem({ note }: NoteItemProps) {
     return (
         <NoteCard>
             <Text>{note.title}</Text>
         </NoteCard>
     );
-};
+}
