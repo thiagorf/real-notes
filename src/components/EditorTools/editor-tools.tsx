@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import {
     actions,
     RichEditor,
@@ -8,8 +8,9 @@ import {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
+    interpolate,
 } from "react-native-reanimated";
-import { IconProps } from "react-native-vector-icons/Icon";
+import type { IconProps } from "react-native-vector-icons/Icon";
 import { ToolbarIcon } from "../ToolbarIcon";
 import { EditorToolbar, ToolbarCTA } from "./editor-tools-styles";
 
@@ -17,66 +18,47 @@ type ActiosKey = "hide";
 
 type IconMapping = Record<ActiosKey, IconProps>;
 
-interface EditorToolsProperties {
-    editorRef: RichEditor;
-}
-
 const icons: IconMapping = {
     hide: {
         name: "closecircleo",
         size: 20,
+        style: null,
     },
 };
 
-export function EditorTools({ editorRef }: EditorToolsProperties) {
+export const EditorTools = forwardRef<RichEditor, unknown>((_, ref) => {
     const [isToolbarVisible, setIsToolbarVisible] = useState(false);
 
+    // value 0 = toolbar cta is visible
+    // value 1 = rich editor toolbar is visible
     const toolbarOpacityAnimated = useSharedValue(0);
-    const ctaOpacityAnimated = useSharedValue(1);
 
     const animatedToolbarOpacity = useAnimatedStyle(() => {
         return {
-            opacity: toolbarOpacityAnimated.value,
+            opacity: interpolate(toolbarOpacityAnimated.value, [0, 1], [0, 1]),
         };
     });
 
     const animatedCTAOpacity = useAnimatedStyle(() => {
         return {
-            opacity: ctaOpacityAnimated.value,
+            opacity: interpolate(toolbarOpacityAnimated.value, [0, 1], [1, 0]),
         };
     });
 
-    function changeToolbarOpacity() {
+    function handleToolbarToggle() {
         const newValue = toolbarOpacityAnimated.value === 0 ? 1 : 0;
-        toolbarOpacityAnimated.value = withTiming(
-            newValue,
-            {
-                duration: 300,
-            },
-            () => {
-                setIsToolbarVisible(true);
-            }
-        );
-    }
 
-    function changeCTAOpacity() {
-        const newValue = ctaOpacityAnimated.value === 1 ? 0 : 1;
-        ctaOpacityAnimated.value = withTiming(
-            newValue,
-            {
-                duration: 300,
-            },
-            () => {
-                setIsToolbarVisible(false);
-            }
-        );
+        toolbarOpacityAnimated.value = withTiming(newValue, {
+            duration: 300,
+        });
+        setIsToolbarVisible(!isToolbarVisible);
     }
 
     return (
         <EditorToolbar>
             {isToolbarVisible && (
                 <RichToolbar
-                    getEditor={() => editorRef}
+                    editor={ref}
                     actions={[
                         actions.setBold,
                         actions.setItalic,
@@ -86,7 +68,7 @@ export function EditorTools({ editorRef }: EditorToolsProperties) {
                     iconMap={{
                         hide: () => (
                             <ToolbarIcon
-                                onPress={changeToolbarOpacity}
+                                onPress={handleToolbarToggle}
                                 icon={icons.hide}
                             />
                         ),
@@ -102,10 +84,10 @@ export function EditorTools({ editorRef }: EditorToolsProperties) {
             )}
             {!isToolbarVisible && (
                 <ToolbarCTA
-                    handlePress={changeCTAOpacity}
+                    handlePress={handleToolbarToggle}
                     style={[animatedCTAOpacity]}
                 />
             )}
         </EditorToolbar>
     );
-}
+});
