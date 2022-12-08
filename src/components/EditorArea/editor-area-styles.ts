@@ -10,4 +10,5 @@ export const NotesTitleInput = styled.TextInput`
     padding: 2px 8px;
     height: 70px;
     font-size: 32px;
+    font-family: "Jost";
 `;
