@@ -16,7 +16,7 @@ type NoteItemProps = {
 export function NoteItem({ note }: NoteItemProps) {
     return (
         <NoteCard>
-            <Text>{note.title}</Text>
+            <Text style={{ fontFamily: "Jost" }}>{note.title}</Text>
         </NoteCard>
     );
 }

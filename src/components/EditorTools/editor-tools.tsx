@@ -11,6 +11,7 @@ import {
     interpolate,
 } from "react-native-reanimated";
 import type { IconProps } from "react-native-vector-icons/Icon";
+import { PASTEL_COLORS } from "../../global/colors";
 import { ToolbarIcon } from "../ToolbarIcon";
 import { EditorToolbar, ToolbarCTA } from "./editor-tools-styles";
 
@@ -22,7 +23,9 @@ const icons: IconMapping = {
     hide: {
         name: "closecircleo",
         size: 20,
-        style: null,
+        style: {
+            color: "#6e6e6e",
+        },
     },
 };
 
@@ -75,8 +78,8 @@ export const EditorTools = forwardRef<RichEditor, unknown>((_, ref) => {
                     }}
                     style={[
                         {
-                            borderWidth: 1,
-                            borderColor: "#CEBDBD",
+                            height: "100%",
+                            backgroundColor: PASTEL_COLORS.PEACH,
                         },
                         animatedToolbarOpacity,
                     ]}

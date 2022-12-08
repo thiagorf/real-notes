@@ -5,6 +5,7 @@ import { MyNotes } from "./screens/MyNotes";
 import { customOptions } from "./util/tab-screen-options";
 import { Notes } from "./screens/Notes";
 import { Settings } from "./screens/Settings";
+import { PASTEL_COLORS } from "./global/colors";
 
 type RouteParams = {
     MyNotes: undefined;
@@ -24,6 +25,13 @@ const AppRoutes = () => {
                 initialRouteName="MyNotes"
                 screenOptions={{
                     headerShown: false,
+                    tabBarStyle: {
+                        backgroundColor: PASTEL_COLORS.PEACH,
+                    },
+                    tabBarIconStyle: {
+                        color: "#6e6e6e",
+                    },
+                    tabBarActiveTintColor: "#1d1d1d",
                 }}
             >
                 <Tab.Screen

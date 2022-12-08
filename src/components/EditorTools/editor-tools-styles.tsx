@@ -10,14 +10,14 @@ interface ToolbarProps extends ViewProps {
 
 export const EditorToolbar = styled.View`
     position: relative;
-    height: 75px;
+    height: 60px;
 `;
 
 const ToolbarWrapper = styled.View`
     position: absolute;
-    right: 15px;
+    right: 0;
     background-color: #fff;
-    width: 60px;
+    width: 45px;
     height: 60px;
 `;
 
@@ -29,8 +29,10 @@ const PressableArea = styled.Pressable`
 // #d0e4c7 pastel green
 //border: 1px solid #cebdbd;
 const ToolbarCTAIcon = styled(Icon)`
-    background-color: ${PASTEL_COLORS.RED};
+    background-color: ${PASTEL_COLORS.PEACH};
+    color: #6e6e6e;
     border-radius: 4px;
+    border-bottom-right-radius: 0;
     padding-top: 16px;
     text-align: center;
     height: 100%;
@@ -40,7 +42,7 @@ export const ToolbarCTA = ({ handlePress, ...props }: ToolbarProps) => {
     return (
         <ToolbarWrapper as={Animated.View} {...props}>
             <PressableArea onPress={handlePress}>
-                <ToolbarCTAIcon name="appstore-o" size={28} />
+                <ToolbarCTAIcon name="left" size={28} />
             </PressableArea>
         </ToolbarWrapper>
     );

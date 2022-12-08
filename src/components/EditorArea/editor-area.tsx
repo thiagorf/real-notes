@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData } from "react-native";
 import { RichEditor } from "react-native-pell-rich-editor";
 import { EditorAreaContainer, NotesTitleInput } from "./editor-area-styles";
@@ -20,6 +20,13 @@ export function EditorArea() {
     function handleContentInputChange(text: string) {
         setEditorContent(text);
     }
+
+    useEffect(() => {
+        if (editorRef.current) {
+            console.log("editor is available");
+            editorRef.current.setFontName("Jost");
+        }
+    }, []);
 
     return (
         <EditorAreaContainer>
