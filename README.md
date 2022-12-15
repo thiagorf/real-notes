@@ -2,6 +2,8 @@
 
 A personal notes app with the features of a rich text editor
 
+**NOTICE:** In exchange for app performance, all actual functionalities in the editor are broken now, but fix will come pretty soon
+
 ## How to run
 
 Certain libraries are only available natively or only works in real devices, so its necessary to use Expo development builds.
